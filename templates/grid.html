@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>grid todo</title>
+<style>
+
+.background {
+  fill: #eee;
+}
+
+line {
+  stroke: #fff;
+}
+
+text.active {
+  fill: red;
+}
+
+line.active {
+  stroke: #ccc;
+}
+
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+var rows = [];
+{% for r in rows %}
+rows.push("{{r.label}}");{% endfor %}
+var columns = [];
+{% for c in cols %}
+columns.push("{{c.label}}");{% endfor %}
+
+var cells = [];
+
+var gridKey = "{{gridkey}}";
+</script>
+</head>
+
+<body>
+<h2>{{grid.title}}</h2>
+<script src="/media/js/griddo.js"></script>
+
+	<form action="/add_row/{{gridkey}}" method="post">
+  <input type="text" name="label" placeholder="row label"/><input type="submit" value="add row" />
+	</form>
+	<form action="/add_col/{{gridkey}}" method="post">
+  <input type="text" name="label" placeholder="column label"/><input type="submit" value="add column" />
+	</form>
+</body>
+</html>

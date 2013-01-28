@@ -92,13 +92,26 @@ class GridPage(webapp2.RequestHandler):
         template = jinja_environment.get_template('grid.html')
         template_values = dict(grid=g, gridkey=grid_id,
                                rows=g.sorted_rows(),
-                               cols=g.sorted_cols())
+                               cols=g.sorted_cols(),
+                               cells=g.cells
+                               )
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(template.render(template_values))
 
+
+class CellUpdate(webapp2.RequestHandler):
+    def post(self, grid_id, ridx, cidx):
+        k = db.Key.from_path("Grid", grid_id)
+        g = db.get(k)
+        row = g.sorted_rows()[int(ridx)]
+        col = g.sorted_cols()[int(cidx)]
+        print g, row, col
+        v = int(self.request.get('v'))
+        self.response.write("ok")
 
 app = webapp2.WSGIApplication(
     [
         ('/', IndexPage),
         ('/grid/([^/]+)/', GridPage),
+        ('/cellupdate/([^/]+)/(\d+)/(\d+)/', CellUpdate),
     ], debug=True)

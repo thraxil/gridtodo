@@ -1,0 +1,17 @@
+
+.background {
+  fill: #eee;
+}
+
+line {
+  stroke: #fff;
+}
+
+text.active {
+  fill: red;
+}
+
+line.active {
+  stroke: #ccc;
+}
+

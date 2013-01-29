@@ -107,6 +107,23 @@ class CellUpdate(webapp2.RequestHandler):
         col = g.sorted_cols()[int(cidx)]
         print g, row, col
         v = int(self.request.get('v'))
+
+        q = db.Query(Cell).filter(
+            "grid=", g).filter("row=", row).filter("col=", col)
+        if q.count() > 0:
+            cell = q.get()
+            if v != 0:
+                cell.value = v
+                cell.put()
+            else:
+                cell.delete()
+        else:
+            if v != 0:
+                cell = Cell(key_name=gen_id(),
+                            grid=g, row=row, col=col,
+                            value=v)
+                cell.put()
+
         self.response.write("ok")
 
 app = webapp2.WSGIApplication(

@@ -131,9 +131,38 @@ class CellUpdate(webapp2.RequestHandler):
 
         self.response.write("ok")
 
+class AddRow(webapp2.RequestHandler):
+    def post(self, grid_id):
+        k = db.Key.from_path("Grid", grid_id)
+        g = db.get(k)
+
+        row = Row(key_name=gen_id(),
+                  grid=g,
+                  label=self.request.get("label"),
+                  display_order=len(g.sorted_rows())
+                  )
+        row.put()
+        self.redirect("/grid/%s/" % grid_id)
+
+class AddCol(webapp2.RequestHandler):
+    def post(self, grid_id):
+        k = db.Key.from_path("Grid", grid_id)
+        g = db.get(k)
+
+        col = Col(key_name=gen_id(),
+                  grid=g,
+                  label=self.request.get("label"),
+                  display_order=len(g.sorted_cols())
+                  )
+        col.put()
+        self.redirect("/grid/%s/" % grid_id)
+
+
 app = webapp2.WSGIApplication(
     [
         ('/', IndexPage),
         ('/grid/([^/]+)/', GridPage),
         ('/cellupdate/([^/]+)/(\d+)/(\d+)/', CellUpdate),
+        ('/add_row/([^/]+)/', AddRow),
+        ('/add_col/([^/]+)/', AddCol),
     ], debug=True)

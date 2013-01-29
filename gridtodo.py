@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+import logging
 import webapp2
 import jinja2
 import os
@@ -30,6 +31,13 @@ class Grid(db.Model):
         cols = [r for r in self.cols]
         cols.sort(key=lambda x: x.display_order)
         return cols
+
+    def get_cell(self, ridx, cidx):
+        for c in self.cells:
+            if c.row.display_order == ridx and c.col.display_order == cidx:
+                return c
+        return None
+
 
 class Row(db.Model):
     grid = db.ReferenceProperty(
@@ -78,7 +86,7 @@ class IndexPage(webapp2.RequestHandler):
             r.put()
             i += 1
         i = 0
-        for cl in row_labels:
+        for cl in col_labels:
             c = Col(key_name=gen_id(), grid=grid, label=cl, display_order=i)
             c.put()
             i += 1
@@ -105,24 +113,21 @@ class CellUpdate(webapp2.RequestHandler):
         g = db.get(k)
         row = g.sorted_rows()[int(ridx)]
         col = g.sorted_cols()[int(cidx)]
-        print g, row, col
-        v = int(self.request.get('v'))
 
-        q = db.Query(Cell).filter(
-            "grid=", g).filter("row=", row).filter("col=", col)
-        if q.count() > 0:
-            cell = q.get()
-            if v != 0:
-                cell.value = v
-                cell.put()
-            else:
-                cell.delete()
-        else:
+        cell = g.get_cell(int(ridx), int(cidx))
+        v = int(self.request.get('v'))
+        if cell is None:
             if v != 0:
                 cell = Cell(key_name=gen_id(),
                             grid=g, row=row, col=col,
                             value=v)
                 cell.put()
+        else:
+            if v != 0:
+                cell.value = v
+                cell.put()
+            else:
+                cell.delete()
 
         self.response.write("ok")
 

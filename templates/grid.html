@@ -6,14 +6,14 @@
 <script>
 var rows = [];
 {% for r in rows %}
-rows.push("{{r.label}}");{% endfor %}
+rows.push("{{r}}");{% endfor %}
 var columns = [];
 {% for c in cols %}
-columns.push("{{c.label}}");{% endfor %}
+columns.push("{{c}}");{% endfor %}
 
 var cells = [];
-{% for cell in cells %}
-cells.push({"row": {{cell.row.display_order}}, "col": {{cell.col.display_order}}, "value": {{cell.value}}});{% endfor %}
+{% for row in cells %}{% for col in row %}{% if col %}
+cells.push({"row": {{forloop.parentloop.counter0}}, "col": {{forloop.counter0}}, "value": {{col}}});{% endif %}{% endfor %}{% endfor %}
 
 var gridKey = "{{gridkey}}";
 </script>

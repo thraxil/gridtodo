@@ -91,7 +91,7 @@ class CellUpdate(webapp2.RequestHandler):
                 "cell_update": {
                     "row":row,
                     "col":col,
-                    "value": cells[row][col]
+                    "value": int(self.request.get('v'))
                     }
                 })
         self.response.write("ok")

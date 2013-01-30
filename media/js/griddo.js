@@ -16,8 +16,6 @@ var svg = d3.select("body").append("svg")
     ")");
 
 var matrix = [];
-//rows = [],
-//columns = [],
 var nr = 0;
 var nc = 0;
 
@@ -26,13 +24,11 @@ var addCell = function(link) {
 };
 
 var setCell = function(link) {
-    console.log("setCell", link);
 		if (link.row > nr || link.col > nc) {
 				console.log("out of bounds!");
 				return
 		}
     matrix[link.row][link.col].z = link.value;
-    console.log()
     var cell = d3.selectAll(".cell")
 				.transition()
 				.duration(500)
@@ -149,12 +145,8 @@ function update() {
 				.attr("transform", "rotate(25)")
 				.text(function(d, i) { return columns[i]; });
 
-//		griddata.links.forEach(setCell);
 		cells.forEach(setCell);
 };
-
-
-//d3.json("/test/test.json", update);
 
 update();
 

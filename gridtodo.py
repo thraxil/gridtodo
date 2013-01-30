@@ -1,3 +1,4 @@
+from google.appengine.api import channel
 from google.appengine.ext import db
 import logging
 import webapp2
@@ -58,10 +59,14 @@ class GridPage(webapp2.RequestHandler):
         k = db.Key.from_path("Grid", grid_id)
         g = db.get(k)
 
+        messager = GridMessager(grid_id)
+        channel_token = messager.create_channel_token()
+
         template_values = dict(grid=g, gridkey=grid_id,
                                rows=g.rows,
                                cols=g.cols,
-                               cells=json.loads(g.cells)['cells']
+                               cells=json.loads(g.cells)['cells'],
+                               channel_id=channel_token,
                                )
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(
@@ -81,6 +86,14 @@ class CellUpdate(webapp2.RequestHandler):
         cells[row][col] = int(self.request.get('v'))
         g.cells = json.dumps(dict(cells=cells))
         g.put()
+        messager = GridMessager(grid_id)
+        messager.send({
+                "cell_update": {
+                    "row":row,
+                    "col":col,
+                    "value": cells[row][col]
+                    }
+                })
         self.response.write("ok")
 
 class AddRow(webapp2.RequestHandler):
@@ -122,6 +135,19 @@ class AddCol(webapp2.RequestHandler):
         g.put()
         self.redirect("/grid/%s/" % grid_id)
 
+
+class GridMessager(object):
+    """Sends a message to a given client."""
+    def __init__(self, grid_key):
+        # new random id
+        self.id = grid_key
+
+    def create_channel_token(self):
+        logging.info("Create channel: " + self.id)
+        return channel.create_channel(self.id)
+
+    def send(self, message):
+        channel.send_message(self.id, json.dumps(message))
 
 app = webapp2.WSGIApplication(
     [

@@ -22,20 +22,23 @@ var nr = 0;
 var nc = 0;
 
 var addCell = function(link) {
-    matrix[link.row][link.col].z += link.value;
+    matrix[link.row][link.col].z = link.value;
 };
 
 var setCell = function(link) {
+    console.log("setCell", link);
 		if (link.row > nr || link.col > nc) {
 				console.log("out of bounds!");
 				return
 		}
-    matrix[link.row][link.col].z += link.value;
+    matrix[link.row][link.col].z = link.value;
+    console.log()
     var cell = d3.selectAll(".cell")
 				.transition()
 				.duration(500)
 				.style("fill-opacity", function(d) { return z(d.z); })
 				.style("fill", function(d) { return c(d.z); });
+    console.log("done");
 }
 
 function rowCreate(row) {
@@ -59,7 +62,6 @@ function rowCreate(row) {
 								"Content-type",
 								"application/x-www-form-urlencoded");
 						xmlHttp.send("v=" + d.z);
-						console.log("v=" + d.z);
 				})
 				.on("mouseout", mouseout);
     cell

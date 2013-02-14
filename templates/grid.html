@@ -32,29 +32,5 @@ var gridKey = "{{gridkey}}";
   <input type="text" name="label" placeholder="column label"/><input type="submit" value="add column" />
 	</form>
 
-<script>
-
-var token = '{{ channel_id }}';
-
-var channel = new goog.appengine.Channel(token);
-var socket = channel.open();
-socket.onopen = function() {
-  window.setTimeout(function() {
-  console.log("connected to socket");
-}, 100);
-}
-
-socket.onmessage = function(evt) {
-  var o = JSON.parse(evt.data);
-  console.log(o);
-  if (o.cell_update) {
-    var row = o.cell_update.row;
-    var col = o.cell_update.col;
-    var value = o.cell_update.value;
-    setCell({'row':row, 'col':col, 'value':value});
-  }
-}
-
-</script>
 </body>
 </html>

@@ -29,12 +29,6 @@ var setCell = function(link) {
 				return
 		}
     matrix[link.row][link.col].z = link.value;
-    var cell = d3.selectAll(".cell")
-				.transition()
-				.duration(500)
-				.style("fill-opacity", function(d) { return z(d.z); })
-				.style("fill", function(d) { return c(d.z); });
-    console.log("done");
 }
 
 function rowCreate(row) {
@@ -145,14 +139,15 @@ function update() {
 				.attr("transform", "rotate(25)")
 				.text(function(d, i) { return columns[i]; });
 
-		cells.forEach(setCell);
+    cells.forEach(setCell);
+    var cell = d3.selectAll(".cell")
+				.transition()
+				.duration(500)
+				.style("fill-opacity", function(d) { return z(d.z); })
+				.style("fill", function(d) { return c(d.z); });
+
+
 };
 
 update();
 
-//setInterval(function () {
-//		var row = parseInt(nr * Math.random(), 10);
-//		var col = parseInt(nc * Math.random(), 10);
-//		var v = parseInt(5 * Math.random());
-//		setCell({"row": row, "col": col, "value": v});
-//}, 3000);
